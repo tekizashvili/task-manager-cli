@@ -20,7 +20,9 @@ def load_tasks() -> dict:
     
     
 def now():
+    """Returns current date and time"""
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
 
 def add(task) -> None:
     """Add a task to the tasks.json"""
@@ -40,12 +42,19 @@ def add(task) -> None:
     
     with open(FILENAME, 'w', encoding='utf-8') as f:
         json.dump(tasks, f, indent=4)
+
+
+def list_tasks() -> None:
+    tasks = load_tasks()
+    for task in tasks:
+        print(task['description'])
             
             
 def main():
     if COMMAND.lower() == 'add':
         add(TASK)
-            
+    elif COMMAND.lower() == 'list':
+        list_tasks()
             
 if __name__ == '__main__':
     while True:
