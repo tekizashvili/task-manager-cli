@@ -18,6 +18,12 @@ def load_tasks() -> dict:
         tasks = json.load(f)
         return tasks
     
+
+def write_tasks(tasks):
+    """Write tasks to a tasks.json"""
+    with open(FILENAME, 'w', encoding='utf-8') as f:
+        json.dump(tasks, f, indent=4)
+    
     
 def now():
     """Returns current date and time"""
@@ -40,8 +46,7 @@ def add(task) -> None:
     
     tasks.append(new_task)
     
-    with open(FILENAME, 'w', encoding='utf-8') as f:
-        json.dump(tasks, f, indent=4)
+    write_tasks(tasks)
     
     print(f'Task added successfully (ID: {id})')
 
@@ -50,13 +55,28 @@ def list_tasks() -> None:
     tasks = load_tasks()
     for task in tasks:
         print(task['description'])
+        
+
+def delete_task(id):
+    tasks = load_tasks()
+    for index, task in enumerate(tasks):
+        if task['id'] == id:
+            tasks.pop(index)
+            print(f'Task removed successfully (ID: {task['id']})')
+    
+    write_tasks(tasks)
             
             
 def main():
-    if COMMAND.lower() == 'add':
+    command = COMMAND.lower()
+    
+    if command == 'add':
         add(TASK)
-    elif COMMAND.lower() == 'list':
+    elif command == 'list':
         list_tasks()
+    elif command =='delete':
+        id = int(sys.argv[2])
+        delete_task(id)
             
 if __name__ == '__main__':
     while True:
