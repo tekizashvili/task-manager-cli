@@ -55,7 +55,7 @@ def add(task: str) -> None:
 def list_tasks() -> None:
     tasks = load_tasks()
     for task in tasks:
-        print(task['description'])
+        print(task['description'] + ' -> ' + task['status'])
         
 
 def delete_task(id: int) -> None:
@@ -77,23 +77,47 @@ def update_task(id: int, new_value: str) -> None:
             print(f"Task updated successfully (ID: {task['id']})")
     
     write_tasks(tasks)
-        
+    
+
+def mark_as_in_progress(id) -> None:
+    tasks = load_tasks()
+    
+    for task in tasks:
+        if task['id'] == id:
+            task['status'] = 'in-progress'
+            print(f'Task ID: {task['id']} marked as in-progress.')
+            
+    write_tasks(tasks)
+    
+
+def mark_as_done(id) -> None:
+    tasks = load_tasks()
+    
+    for task in tasks:
+        if task['id'] == id:
+            task['status'] = 'done'
+            print(f'Task ID: {task['id']} marked as done.')
+            
+    write_tasks(tasks)
+
     
 def main():
     command = COMMAND.lower()
+    id = int(sys.argv[2])
     
     if command == 'add':
         add(TASK)
     elif command == 'list':
         list_tasks()
     elif command =='delete':
-        id = int(sys.argv[2])
         delete_task(id)
     elif command == 'update':
-        id = int(sys.argv[2])
         new_value = ' '.join(sys.argv[3:])
         update_task(id, new_value)
-            
+    elif command == 'mark-in-progress':
+        mark_as_in_progress(id)
+    elif command == 'mark-done':
+        mark_as_done(id)
 
 if __name__ == '__main__':
     while True:
