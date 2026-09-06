@@ -34,7 +34,7 @@ def add(task) -> None:
     """Add a task to the tasks.json"""
     tasks = load_tasks()
     
-    id = len(tasks) + 1
+    id = len(tasks) + 1 if not tasks else tasks[-1]['id'] + 1
     
     new_task = {
                     'id': id,
@@ -78,6 +78,7 @@ def main():
         id = int(sys.argv[2])
         delete_task(id)
             
+
 if __name__ == '__main__':
     while True:
         main()
