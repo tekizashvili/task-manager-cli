@@ -42,6 +42,8 @@ def add(task) -> None:
     
     with open(FILENAME, 'w', encoding='utf-8') as f:
         json.dump(tasks, f, indent=4)
+    
+    print(f'Task added successfully (ID: {id})')
 
 
 def list_tasks() -> None:
