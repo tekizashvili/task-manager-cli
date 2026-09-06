@@ -53,13 +53,25 @@ def add(task: str) -> None:
 
 
 def list_tasks() -> None:
+    """List tasks specifying a status or without it"""
     tasks = load_tasks()
-    for task in tasks:
-        print(task['description'] + ' -> ' + task['status'])
-        
+    
+    if len(sys.argv) == 2:
+        for task in tasks:
+            all_items = task['description'] + ' -> ' + task['status']
+            print(all_items)
+    else:
+        status = sys.argv[2]
+        for task in tasks:
+            if task['status'] == status:
+                print(task['description'] + ' -> ' + task['status'])
+                       
 
-def delete_task(id: int) -> None:
+def delete_task() -> None:
+    """Delete task from tasks.json"""
     tasks = load_tasks()
+    id = int(sys.argv[2])
+    
     for index, task in enumerate(tasks):
         if task['id'] == id:
             tasks.pop(index)
@@ -68,56 +80,51 @@ def delete_task(id: int) -> None:
     write_tasks(tasks)
     
     
-def update_task(id: int, new_value: str) -> None:
+def update_task_description(new_value: str) -> None:
+    """Update task name"""
     tasks = load_tasks()
-    
+    id = int(sys.argv[2])
+
     for task in tasks:
         if task['id'] == id:
             task['description'] = new_value
             print(f"Task updated successfully (ID: {task['id']})")
+            task['updatedAt'] = now()
     
     write_tasks(tasks)
     
 
-def mark_as_in_progress(id) -> None:
+def change_status(command: str) -> None:
+    """Changes status of a task to in-progress or done"""
     tasks = load_tasks()
+    id = int(sys.argv[2])
     
     for task in tasks:
         if task['id'] == id:
-            task['status'] = 'in-progress'
-            print(f'Task ID: {task['id']} marked as in-progress.')
-            
+            task['status'] = command[5:]
+            task['updatedAt'] = now()
+            print(f'Task ID: {task['id']} marked as {command[5:]}.')
+
     write_tasks(tasks)
     
 
-def mark_as_done(id) -> None:
-    tasks = load_tasks()
-    
-    for task in tasks:
-        if task['id'] == id:
-            task['status'] = 'done'
-            print(f'Task ID: {task['id']} marked as done.')
-            
-    write_tasks(tasks)
-
-    
 def main():
     command = COMMAND.lower()
-    id = int(sys.argv[2])
     
     if command == 'add':
         add(TASK)
     elif command == 'list':
         list_tasks()
     elif command =='delete':
-        delete_task(id)
+        delete_task()
     elif command == 'update':
         new_value = ' '.join(sys.argv[3:])
-        update_task(id, new_value)
+        update_task_description(new_value)
     elif command == 'mark-in-progress':
-        mark_as_in_progress(id)
+        change_status(command)
     elif command == 'mark-done':
-        mark_as_done(id)
+        change_status(command)
+
 
 if __name__ == '__main__':
     while True:
