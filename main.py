@@ -8,7 +8,7 @@ COMMAND = sys.argv[1] if len(sys.argv) > 1 else None
 TASK = ' '.join(sys.argv[2:])
 
 
-def load_tasks() -> dict:
+def load_tasks() -> list:
     """Load tasks from tasks.json"""
     
     if not os.path.exists(FILENAME):
@@ -19,21 +19,22 @@ def load_tasks() -> dict:
         return tasks
     
 
-def write_tasks(tasks):
+def write_tasks(tasks: list) -> None:
     """Write tasks to a tasks.json"""
     with open(FILENAME, 'w', encoding='utf-8') as f:
         json.dump(tasks, f, indent=4)
     
     
-def now():
+def now() -> str:
     """Returns current date and time"""
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
-def add(task) -> None:
+def add(task: str) -> None:
     """Add a task to the tasks.json"""
     tasks = load_tasks()
     
+    # Return 1 if the tasks is empty, otherwise return the last ID + 1.
     id = len(tasks) + 1 if not tasks else tasks[-1]['id'] + 1
     
     new_task = {
@@ -57,7 +58,7 @@ def list_tasks() -> None:
         print(task['description'])
         
 
-def delete_task(id):
+def delete_task(id: int) -> None:
     tasks = load_tasks()
     for index, task in enumerate(tasks):
         if task['id'] == id:
@@ -65,8 +66,19 @@ def delete_task(id):
             print(f'Task removed successfully (ID: {task['id']})')
     
     write_tasks(tasks)
-            
-            
+    
+    
+def update_task(id: int, new_value: str) -> None:
+    tasks = load_tasks()
+    
+    for task in tasks:
+        if task['id'] == id:
+            task['description'] = new_value
+            print(f"Task updated successfully (ID: {task['id']})")
+    
+    write_tasks(tasks)
+        
+    
 def main():
     command = COMMAND.lower()
     
@@ -77,6 +89,10 @@ def main():
     elif command =='delete':
         id = int(sys.argv[2])
         delete_task(id)
+    elif command == 'update':
+        id = int(sys.argv[2])
+        new_value = ' '.join(sys.argv[3:])
+        update_task(id, new_value)
             
 
 if __name__ == '__main__':
