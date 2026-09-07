@@ -75,7 +75,7 @@ def delete_task() -> None:
     for index, task in enumerate(tasks):
         if task['id'] == id:
             tasks.pop(index)
-            print(f'Task removed successfully (ID: {task['id']})')
+            print(f"Task removed successfully (ID: {task['id']})")
     
     write_tasks(tasks)
     
@@ -103,7 +103,7 @@ def change_status(command: str) -> None:
         if task['id'] == id:
             task['status'] = command[5:]
             task['updatedAt'] = now()
-            print(f'Task ID: {task['id']} marked as {command[5:]}.')
+            print(f"Task ID: {task['id']} marked as {command[5:]}.")
 
     write_tasks(tasks)
     

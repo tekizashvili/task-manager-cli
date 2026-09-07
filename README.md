@@ -5,60 +5,49 @@ plain `tasks.json` file, and there are no third-party dependencies.
 
 Project idea from [roadmap.sh](https://roadmap.sh/projects/task-tracker).
 
-## Requirements
-
-- Python 3.14 or newer
-- [uv](https://docs.astral.sh/uv/) (optional, but the easiest way to install)
-
 ## Installation
 
-First get the code:
+Install straight from GitHub with pip:
 
 ```bash
-git clone git@github.com:tekizashvili/task-manager-cli.git
-cd task-manager-cli
+pip install git+https://github.com/tekizashvili/task-manager-cli.git
 ```
 
-Then pick one of the following.
-
-### Option 1: install the `trask` command (recommended)
+That gives you a `trask` command.
 
 ```bash
-uv tool install .
+$ trask add "My first task"
+Task added successfully (ID: 1)
 ```
 
-This puts a `trask` command on your PATH, so you can track tasks from any
-directory. If uv warns that the install directory is not on your PATH, run:
+Requires Python 3.9 or newer.
+
+### With uv
+
+If you use [uv](https://docs.astral.sh/uv/), one command installs `trask` into
+its own isolated environment and puts it on your PATH:
 
 ```bash
-uv tool update-shell
+uv tool install git+https://github.com/tekizashvili/task-manager-cli.git
 ```
 
-### Option 2: run it inside the project
+The executable is symlinked into `~/.local/bin`, and the environment itself
+lives in `~/.local/share/uv/tools/trask`. If uv warns that the directory is not
+on your PATH, run `uv tool update-shell` and reopen your terminal. uv also
+downloads a suitable Python for you if you don't have one.
+
+### With pipx
 
 ```bash
-uv sync
-uv run trask list
+pipx install git+https://github.com/tekizashvili/task-manager-cli.git
 ```
 
-`uv sync` creates a `.venv` with the right Python version and installs the
-project into it. Prefix every command with `uv run`.
+### Updating and uninstalling
 
-### Option 3: no installation at all
-
-The script only uses the standard library, so you can run the file directly:
-
-```bash
-python main.py list
-```
-
-Anywhere below you see `trask`, `python main.py` works the same way.
-
-You can also install it with pip if you prefer:
-
-```bash
-pip install .
-```
+| | pip | uv | pipx |
+| --- | --- | --- | --- |
+| Update | `pip install --upgrade git+https://github.com/tekizashvili/task-manager-cli.git` | `uv tool upgrade trask` | `pipx upgrade trask` |
+| Uninstall | `pip uninstall trask` | `uv tool uninstall trask` | `pipx uninstall trask` |
 
 ## Usage
 
@@ -76,49 +65,37 @@ trask <command> [arguments]
 | `mark-done <id>` | Mark a task as done |
 | `delete <id>` | Delete a task |
 
-### Add a task
+A full session looks like this:
 
 ```bash
 $ trask add "Buy groceries"
 Task added successfully (ID: 1)
-```
 
-### List tasks
+$ trask add "Wash the dishes"
+Task added successfully (ID: 2)
 
-```bash
+$ trask mark-in-progress 2
+Task ID: 2 marked as in-progress.
+
 $ trask list
 Buy groceries -> todo
 Wash the dishes -> in-progress
 
 $ trask list todo
 Buy groceries -> todo
-```
 
-### Update a task
-
-Use the ID that `add` printed:
-
-```bash
 $ trask update 1 "Buy groceries and cook dinner"
 Task updated successfully (ID: 1)
-```
-
-### Mark a task as in-progress or done
-
-```bash
-$ trask mark-in-progress 1
-Task ID: 1 marked as in-progress.
 
 $ trask mark-done 1
 Task ID: 1 marked as done.
+
+$ trask delete 2
+Task removed successfully (ID: 2)
 ```
 
-### Delete a task
-
-```bash
-$ trask delete 1
-Task removed successfully (ID: 1)
-```
+Use the ID printed by `add` (or shown by `list`) to update, mark or delete a
+task.
 
 ## Task statuses
 
@@ -130,9 +107,9 @@ Task removed successfully (ID: 1)
 
 ## Where tasks are stored
 
-Tasks are saved to `tasks.json` **in the directory you run the command from**,
-and the file is created on the first `add`. Run `trask` from the same place
-each time to see the same list, or keep a separate list per project directory.
+Tasks are saved to `tasks.json` **in the directory you run `trask` from**, and
+the file is created on the first `add`. Run `trask` from the same place each
+time to see the same list, or keep a separate list per project directory.
 
 Each task looks like this:
 
@@ -146,8 +123,17 @@ Each task looks like this:
 }
 ```
 
-## Notes
+## Development
 
-Commands expect valid input: give `add` and `update` a description, and give
-`update`, `delete` and the `mark-` commands an existing task ID. Input
-validation and friendlier error messages are not implemented yet.
+```bash
+git clone https://github.com/tekizashvili/task-manager-cli.git
+cd task-manager-cli
+python main.py list
+```
+
+The script only uses the standard library, so `python main.py` needs no setup
+at all. To work on it as an installed package instead:
+
+```bash
+pip install -e .      # or, with uv: uv sync && uv run trask list
+```
